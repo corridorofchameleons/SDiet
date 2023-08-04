@@ -9,3 +9,5 @@ DB_NAME = os.environ.get('DB_NAME')
 DB_USER = os.environ.get('DB_USER')
 DB_PASS = os.environ.get('DB_PASS')
 
+sec_key = os.environ.get('SEC_KEY')
+reset_key = os.environ.get('RESET_KEY')
