@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
+from starlette.middleware.cors import CORSMiddleware
 
 from auth.auth import auth_backend
 from auth.base_config import Users
@@ -15,6 +16,18 @@ fastapi_users = FastAPIUsers[Users, int](
 
 app = FastAPI(
     title='SFDiet'
+)
+
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(

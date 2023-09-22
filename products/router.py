@@ -1,6 +1,7 @@
 import json
 
 from fastapi import APIRouter, Depends
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,9 +23,9 @@ async def get_cats(session: AsyncSession = Depends(get_async_session)):
     return res
 
 
-@router.get('/{cat}')
-async def get_products(cat: str, session: AsyncSession = Depends(get_async_session)):
-    query = select(products).where(products.c.category == select(categories.c.id).where(categories.c.name == cat))
+@router.get('/{cat_id}')
+async def get_products(cat_id: int, session: AsyncSession = Depends(get_async_session)):
+    query = select(products).where(products.c.category == cat_id)
     result = await session.execute(query)
     res = [{'id': a, 'name': b, 'protein': c, 'fats': d, 'carbohydrates': e, 'category': f} for a, b, c, d, e, f in result.all()]
     return res
