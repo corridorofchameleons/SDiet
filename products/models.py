@@ -18,5 +18,6 @@ products = Table(
     Column('protein', Float, nullable=False, default=0.0),
     Column('fats', Float, nullable=False, default=0.0),
     Column('carbohydrates', Float, nullable=False, default=0.0),
+    Column('calories', Float, nullable=True, default=0.0),
     Column('category', Integer, ForeignKey('categories.id', ondelete='RESTRICT'))
 )

@@ -22,9 +22,10 @@ watch(
     }
 )
 
-async function getTable() {
+async function getTable(pars='') {
     if (cat.value) {
-        const res = await fetch("http://localhost:8000/products/" + cat.value)
+        console.log(pars)
+        const res = await fetch("http://localhost:8000/products/" + cat.value + pars)
         table_data.value = await res.json()}
 }
 
@@ -36,10 +37,26 @@ async function getTable() {
         <!-- <thead><th colspan="5" class="t-head">{{ catname.replaceAll('_', ' ') || '<название категории>' }}</th></thead> -->
         <tr>
             <th>Наименование</th>
-            <th>Б</th>
-            <th>Ж</th>
-            <th>У</th>
-            <th>Ккал</th>
+            <th><div style="display: flex; justify-content: space-around;"><p>Б</p>
+                <div class="btns">
+                <button @click="router.push({ query: { sort: 'protein-asc' }}), getTable('?sort=protein-asc')">&uArr;</button>
+                <button @click="router.push({ query: { sort: 'protein-desc' }}), getTable('?sort=protein-desc')">&dArr;</button></div>
+                </div></th>
+            <th><div style="display: flex; justify-content: space-around;"><p>Ж</p>
+                <div class="btns">
+                <button @click="router.push({ query: { sort: 'fats-asc' }}), getTable('?sort=fats-asc')">&uArr;</button>
+                <button @click="router.push({ query: { sort: 'fats-desc' }}), getTable('?sort=fats-desc')">&dArr;</button></div>
+                </div></th>
+            <th><div style="display: flex; justify-content: space-around;"><p>У</p>
+                <div class="btns">
+                <button @click="router.push({ query: { sort: 'carbs-asc' }}), getTable('?sort=carbohydrates-asc')">&uArr;</button>
+                <button @click="router.push({ query: { sort: 'carbs-desc' }}), getTable('?sort=carbohydrates-desc')">&dArr;</button></div>
+                </div></th>
+            <th><div style="display: flex; justify-content: space-around;"><p>К</p>
+                <div class="btns">
+                <button @click="router.push({ query: { sort: 'calories-asc' }}), getTable('?sort=calories-asc')">&uArr;</button>
+                <button @click="router.push({ query: { sort: 'calories-desc' }}), getTable('?sort=calories-desc')">&dArr;</button></div>
+                </div></th>
         </tr>
         <tbody>
         <tr v-for="r in table_data" :key="r.id">
@@ -47,7 +64,7 @@ async function getTable() {
             <td class="val-td">{{ r.protein.toFixed(1) }}</td>
             <td class="val-td">{{ r.fats.toFixed(1) }}</td>
             <td class="val-td">{{ r.carbohydrates.toFixed(1) }}</td>
-            <td class="val-td">{{ (r.fats * 9.3 + r.protein * 4.2 + r.carbohydrates * 4.2).toFixed(1) }}</td>
+            <td class="val-td">{{ r.calories.toFixed(1) }}</td>
         </tr>
         </tbody>
     </table>
@@ -57,6 +74,16 @@ async function getTable() {
 <style scoped>
 .table {
     width: 800px;
+}
+.table button {
+    background-color: rgb(0, 44, 65);
+    color: white;
+    border: none;
+}
+.btns {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 tbody tr:nth-child(odd) {
     background-color: #dddddd;
@@ -82,6 +109,6 @@ th {
     font-size: 1.5em;
 }
 .val-td {
-    width: 70px;
+    width: 75px;
 }
 </style>

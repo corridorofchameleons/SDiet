@@ -22,7 +22,7 @@ async function getCats() {
 <div class="wrapper">
     <div class="nav-bar-wrapper">
         <h2 class="cats">Категории</h2>
-        <router-link v-for="d in cats" :key="d.id"
+        <router-link v-for="d in cats" :key="d.name"
             :to="{name: 'products_table', 
             params: { id: d.id }, props: true }"
             class="link" 
