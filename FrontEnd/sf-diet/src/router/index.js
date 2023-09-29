@@ -12,7 +12,7 @@ const routes = [
         path: ':id',
         name: 'products_table',
         component: () => import(/* webpackChunkName: "products_table" */ '../components/ProductTable.vue'),
-        props: true
+        props: (route) => ({ query: route.query.q })
       }],
   }
 ]
