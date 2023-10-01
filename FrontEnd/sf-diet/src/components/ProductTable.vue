@@ -1,17 +1,14 @@
 <script setup>
 import router from '@/router';
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch,reactive } from 'vue'
 import axios from 'axios'
 
 // const props = defineProps({
 //   catname: String,
 // })
-let parameters = {
-    'page': 0,
-    'sort': '',
-    'search': ''
-}
-
+const page = reactive({num: 0})
+const search = ref('')
+const sorting = reactive({sort: ''})
 const cat = ref(null)
 const pages = ref(null)
 const table_data = ref(null)
@@ -19,8 +16,10 @@ const table_data = ref(null)
 
 onMounted(() => {
     cat.value = router.currentRoute.value.params.id
+
     getTable()
 })
+
 
 watch(
     () => router.currentRoute.value,
@@ -29,7 +28,6 @@ watch(
         getTable()
     }
 )
-
 
 async function getTable() {
     if (cat.value) {
@@ -46,12 +44,30 @@ async function getTable() {
         }
 }
 
-function get_query({sr=parameters.sort, pg=parameters.page, srch=parameters.search}) {
-    router.push({ query: { sort: sr, page: pg, search: srch } })
+function get_query() {
+    router.push({ query: { sort: sorting.sort, page: page.num, search: search.value } })
+}
+function kill_query() {
+    page.num = 0
+    sorting.sort = ''
+    search.value = ''
+    router.push({ query: { sort: sorting.sort, page: page.num, search: search.value } })
 }
 </script>
 
 <template>
+    <div>
+        <input v-model="search"
+            id="s-input"
+            placeholder="Поиск"
+            @input="get_query"
+        >
+        <button type="submit"
+            @click="kill_query"
+        >
+            Сбросить поиск
+        </button>
+    </div>
     <div v-if="table_data">
     <table class="table">
         <!-- <thead><th colspan="5" class="t-head">{{ catname.replaceAll('_', ' ') || '<название категории>' }}</th></thead> -->
@@ -60,38 +76,38 @@ function get_query({sr=parameters.sort, pg=parameters.page, srch=parameters.sear
             <th><div style="display: flex; justify-content: space-around;"><p>Б</p>
                 <div class="btns">
                 <button @click="() => {
-                    parameters.sort = 'protein-asc'
-                    get_query({ sr: 'protein-asc' })}">&uArr;</button>
+                    sorting.sort = 'protein-asc'
+                    get_query()}">&uArr;</button>
                 <button @click="() => {
-                    parameters.sort = 'protein-desc'
-                    get_query({ sr: 'protein-desc' })}">&dArr;</button></div>
+                    sorting.sort = 'protein-desc'
+                    get_query()}">&dArr;</button></div>
                 </div></th>
             <th><div style="display: flex; justify-content: space-around;"><p>Ж</p>
                 <div class="btns">
                 <button @click="() => {
-                    parameters.sort = 'fats-asc'
-                    get_query({ sr: 'fats-asc' })}">&uArr;</button>
+                    sorting.sort = 'fats-asc'
+                    get_query()}">&uArr;</button>
                 <button @click="() => {
-                    parameters.sort = 'fats-desc'
-                    get_query({ sr: 'fats-desc'})}">&dArr;</button></div>
+                    sorting.sort = 'fats-desc'
+                    get_query()}">&dArr;</button></div>
                 </div></th>
             <th><div style="display: flex; justify-content: space-around;"><p>У</p>
                 <div class="btns">
                 <button @click="() => {
-                    parameters.sort = 'carbohydrates-asc'
-                    get_query({ sr: 'carbohydrates-asc'})}">&uArr;</button>
+                    sorting.sort = 'carbohydrates-asc'
+                    get_query()}">&uArr;</button>
                 <button @click="() => {
-                    parameters.sort = 'carbohydrates-desc'
-                    get_query({ sr: 'carbohydrates-desc'})}">&dArr;</button></div>
+                    sorting.sort = 'carbohydrates-desc'
+                    get_query()}">&dArr;</button></div>
                 </div></th>
             <th><div style="display: flex; justify-content: space-around;"><p>К</p>
                 <div class="btns">
                 <button @click="() => {
-                    parameters.sort = 'calories-asc'
-                    get_query({ sr: 'calories-asc'})}">&uArr;</button>
+                    sorting.sort = 'calories-asc'
+                    get_query()}">&uArr;</button>
                 <button @click="() => {
-                    parameters.sort = 'calories-desc'
-                    get_query({ sr: 'calories-desc'})}">&dArr;</button></div>
+                    sorting.sort = 'calories-desc'
+                    get_query()}">&dArr;</button></div>
                 </div></th>
         </tr>
         <tbody>
@@ -104,12 +120,12 @@ function get_query({sr=parameters.sort, pg=parameters.page, srch=parameters.sear
         </tr>
         </tbody>
     </table>
-    <div class="pagination">
+    <div v-if="pages.length > 1" class="pagination">
         <button v-for="p in pages" :key="p"
             class="page"
             @click="() => {
-                parameters.page = p
-                get_query({pg: p})
+                page.num = p
+                get_query()
             }"
         >{{ p + 1 }}</button> 
     </div>
