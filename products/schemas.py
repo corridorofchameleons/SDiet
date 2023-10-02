@@ -6,4 +6,5 @@ class OperationCreate(BaseModel):
     protein: float
     fats: float
     carbohydrates: float
+    calories: float
     category: int

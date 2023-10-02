@@ -13,7 +13,13 @@ const routes = [
         name: 'products_table',
         component: () => import(/* webpackChunkName: "products_table" */ '../components/ProductTable.vue'),
         props: (route) => ({ query: route.query.q })
-      }],
+      },
+      ],
+  },
+  {
+    path: '/add',
+    name: 'add_product',
+    component: () => import (/* webpackChunkName: "add_product" */ '../components/AddProduct.vue')
   }
 ]
 

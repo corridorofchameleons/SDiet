@@ -20,4 +20,7 @@ header, footer {
   margin-left: 8px;
   width: 1138px;
 }
+body {
+  min-height: 800px;
+}
 </style>

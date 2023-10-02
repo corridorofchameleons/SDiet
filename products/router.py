@@ -26,7 +26,7 @@ async def get_cats(session: AsyncSession = Depends(get_async_session)):
 
 @router.get('/{cat_id}')
 async def get_products(cat_id: int, sort: str | None = None, search: str | None = '', page: int = 0, session: AsyncSession = Depends(get_async_session)):
-    paginate_by = 40
+    paginate_by = 30
     stmt = select(products).where(products.c.category == cat_id).filter(func.lower(products.c.name).like(f'%{search}%'))
     if sort:
         print(sort)
@@ -36,10 +36,8 @@ async def get_products(cat_id: int, sort: str | None = None, search: str | None 
             stmt = stmt.order_by(sort_by)
         elif order == 'desc':
             stmt = stmt.order_by(desc(sort_by))
-    # else:
-    #     stmt = select(products).where(products.c.category == cat_id)
+
     result = await session.execute(stmt)
-    # print(result.all())
 
     res = [{'id': a, 'name': b, 'protein': c, 'fats': d, 'carbohydrates': e, 'calories': f, 'category': g} for a, b, c, d, e, f, g in result.all()]
 
@@ -49,9 +47,11 @@ async def get_products(cat_id: int, sort: str | None = None, search: str | None 
     return output
 
 
-@router.post('/add_product')
+@router.post('/add_product', status_code=201)
 async def get_products(operation: OperationCreate, session: AsyncSession = Depends(get_async_session)):
+    print(operation.model_dump())
     stmt = insert(products).values(**operation.model_dump())
     await session.execute(stmt)
     await session.commit()
     return {'status': 'Продукт успешно добавлен'}
+

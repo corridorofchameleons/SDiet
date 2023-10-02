@@ -1,11 +1,8 @@
 <script setup>
-import router from '@/router';
+import router from '@/router'
 import { onMounted, ref, watch,reactive } from 'vue'
 import axios from 'axios'
 
-// const props = defineProps({
-//   catname: String,
-// })
 const page = reactive({num: 0})
 const search = ref('')
 const sorting = reactive({sort: ''})
@@ -56,7 +53,7 @@ function kill_query() {
 </script>
 
 <template>
-    <div>
+    <div class="search">
         <input v-model="search"
             id="s-input"
             placeholder="Поиск"
@@ -67,7 +64,13 @@ function kill_query() {
         >
             Сбросить поиск
         </button>
+        <button class="add-btn"
+        @click="router.push({name: 'add_product'})"
+    >
+        Добавить продукт
+        </button>
     </div>
+
     <div v-if="table_data">
     <table class="table">
         <!-- <thead><th colspan="5" class="t-head">{{ catname.replaceAll('_', ' ') || '<название категории>' }}</th></thead> -->
@@ -121,6 +124,15 @@ function kill_query() {
         </tbody>
     </table>
     <div v-if="pages.length > 1" class="pagination">
+        <p class="page">Страница: </p>
+        <button class="page"
+            @click="() => {
+                if (page.num > 1) {
+                    page.num -= 1
+                    get_query()
+                }
+            }"
+        >&lt;</button>
         <button v-for="p in pages" :key="p"
             class="page"
             @click="() => {
@@ -128,11 +140,28 @@ function kill_query() {
                 get_query()
             }"
         >{{ p + 1 }}</button> 
+        <button class="page"
+            @click="() => {
+                if (page.num < pages.length - 1) {
+                    page.num += 1
+                    get_query()
+                }
+            }">&gt;</button>
     </div>
     </div>
 </template>
 
 <style scoped>
+.search {
+    float: left;
+}
+.add-btn {
+    margin-left: 200px;
+}
+.search input, .search button {
+    font-size: 1.1em;
+    margin: 15px 5px 15px 5px;
+}
 .table {
     width: 800px;
 }
@@ -173,11 +202,24 @@ th {
     width: 75px;
 }
 .pagination {
+    display: flex;
+    justify-content: center;
     margin: 10px;
-    font-size: 1.5em;
+    font-size: 1.3em;
     text-align: center;
 }
 .page {
     margin: 5px;
+    height: 25px;
+    border: none;
+}
+button.page {
+    font-size: 1em;
+    background-color: rgb(255, 255, 255);
+    border-radius: 3px;
+    font-weight: bold;
+}
+button.page:active {
+    background-color: rgb(37, 37, 37);
 }
 </style>
