@@ -17,9 +17,22 @@ const routes = [
       ],
   },
   {
-    path: '/add',
+    path: '/add_product',
     name: 'add_product',
-    component: () => import (/* webpackChunkName: "add_product" */ '../components/AddProduct.vue')
+    component: () => import (/* webpackChunkName: "add_product" */ '../views/AddProduct.vue')
+  },
+  {
+    path: '/account',
+    name: 'account',
+
+    component: () => import('@/views/AccountView.vue'),
+    children: [
+      {
+        path: '/add_data',
+        name: 'add_data',
+        component: () => import('@/components/AddData.vue')
+      }
+    ]
   }
 ]
 

@@ -8,7 +8,9 @@ import PageFooter from '@/components/PageFooter.vue'
     <PageHeader/>
   </header>
   <body>
-    <router-view/>
+    <div class="content">
+      <router-view/>
+    </div>
   </body>
   <footer>
     <PageFooter/>
@@ -16,11 +18,14 @@ import PageFooter from '@/components/PageFooter.vue'
 </template>
 
 <style>
-header, footer {
+header, body, footer {
   margin-left: 8px;
   width: 1138px;
 }
 body {
   min-height: 800px;
+}
+.content {
+  margin-left: 8px;
 }
 </style>

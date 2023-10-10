@@ -24,14 +24,20 @@ async def get_cats(session: AsyncSession = Depends(get_async_session)):
     return res
 
 
+@router.get('/product_list')
+async def get_cats(search: str | None = '', session: AsyncSession = Depends(get_async_session)):
+    query = select(products).filter(func.lower(products.c.name).like(f'%{search.lower()}%')).limit(20)
+    result = await session.execute(query)
+    res = [{'id': a, 'name': b, 'protein': c, 'fats': d, 'carbohydrates': e, 'calories': f, 'category': g} for a, b, c, d, e, f, g in result.all()]
+    return res
+
+
 @router.get('/{cat_id}')
 async def get_products(cat_id: int, sort: str | None = None, search: str | None = '', page: int = 0, session: AsyncSession = Depends(get_async_session)):
     paginate_by = 30
-    stmt = select(products).where(products.c.category == cat_id).filter(func.lower(products.c.name).like(f'%{search}%'))
+    stmt = select(products).where(products.c.category == cat_id).filter(func.lower(products.c.name).like(f'%{search.lower()}%'))
     if sort:
-        print(sort)
         sort_by, order = sort.split('-')
-        print(sort_by, order)
         if order == 'asc':
             stmt = stmt.order_by(sort_by)
         elif order == 'desc':
