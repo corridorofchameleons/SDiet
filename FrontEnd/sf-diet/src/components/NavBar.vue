@@ -50,9 +50,9 @@ async function getCats() {
     display: flex;
     flex-direction: column;
     padding: 0 15px 0 0;
-    margin: 5px 10px 5px 0;
-    margin-top: 0;
+    margin: 0 10px 0 0;
     font-size: 1.2em;
+    border-right: 2px solid white;
 }
 .cats {
     margin-top: 0;

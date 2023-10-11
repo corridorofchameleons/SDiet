@@ -1,5 +1,4 @@
 <script setup>
-import router from '@/router/index.js'
 import { ref } from 'vue'
 
 const btns = ref([
@@ -10,10 +9,11 @@ const btns = ref([
 <template>
 <div class="wrapper">
     <div class="nav-bar-wrapper">
-        <a v-for="btn in btns" :key="btn.num"
-            @click="router.push({name: btn.b_link })"
+        <router-link v-for="btn in btns" :key="btn.num"
+            :to="{name: btn.b_link }"
             class="link"
-            >{{ btn.b_name }}</a>
+            active-class="active-link"
+            >{{ btn.b_name }}</router-link>
     </div>
     <div class="content">
         <RouterView/>
@@ -33,9 +33,9 @@ const btns = ref([
     display: flex;
     flex-direction: column;
     padding: 0 15px 0 0;
-    margin: 5px 10px 5px 0;
-    margin-top: 0;
+    margin: 0 10px 0 0;
     font-size: 1.2em;
+    border-right: 2px solid white;
 }
 .cats {
     margin-top: 0;
