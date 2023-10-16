@@ -2,8 +2,16 @@
 import { onMounted, ref } from 'vue'
 import axios from 'axios';
 
-const date = ref(new Date())
+const date = ref(null)
+const history = ref(null)
+
 const rows = ref([])
+const total_initial = ref({
+    p: 0,
+    f: 0,
+    c: 0,
+    cal: 0
+})
 const total = ref({
     p: 0,
     f: 0,
@@ -12,6 +20,38 @@ const total = ref({
 })
 const tmp_data = ref(null)
 let curid = null
+
+function setDate() {
+    const d = new Date()
+    const day = ("0" + d.getDate()).slice(-2)
+    const month = ("0" + (d.getMonth() + 1)).slice(-2)
+    const year = d.getFullYear()
+    date.value = year + "-" + month + "-" + day
+}
+
+async function getHistory() {
+    const res = await axios.get("http://localhost:8000/records", {
+        params: {
+            date: date.value
+        }
+    })
+    history.value = res.data
+
+    let p = 0, f = 0, c = 0, cal = 0
+
+    for (let i=0; i < history.value.length; i++) {
+        p += parseFloat(history.value[i].protein)
+        f += parseFloat(history.value[i].fats)
+        c += parseFloat(history.value[i].carbohydrates)
+        cal += parseFloat(history.value[i].calories)
+    }
+
+    total_initial.value.p += p
+    total_initial.value.f += f
+    total_initial.value.c += c
+    total_initial.value.cal += cal
+    setTotal()
+}
 
 
 function addProduct(id) {
@@ -97,14 +137,34 @@ function setTotal() {
         }
     }
 
-    total.value.p = p.toFixed(1)
-    total.value.f = f.toFixed(1)
-    total.value.c = c.toFixed(1)
-    total.value.cal = cal.toFixed(0)
+    total.value.p = (parseFloat(total_initial.value.p) + parseFloat(p)).toFixed(1)
+    total.value.f = (parseFloat(total_initial.value.f) + parseFloat(f)).toFixed(1)
+    total.value.c = (parseFloat(total_initial.value.c) + parseFloat(c)).toFixed(1)
+    total.value.cal = (parseFloat(total_initial.value.cal) + parseFloat(cal)).toFixed(0)
+}
+
+function addRecord() {
+    for (let i=0; i < rows.value.length; i++) {
+        if (rows.value[i].to_be_added) {
+            axios.post("http://localhost:8000/records", {
+                "user_id": 0,
+                "date": date.value,
+                "name": rows.value[i].name,
+                "weight": rows.value[i].amt,
+                "protein": rows.value[i].p,
+                "fats": rows.value[i].f,
+                "carbohydrates": rows.value[i].c,
+                "calories": rows.value[i].cal
+                },
+            )
+         }
+    }
 }
 
 onMounted(() => {
     addProduct(0)
+    setDate()
+    getHistory()
 })
 
 </script>
@@ -115,7 +175,7 @@ onMounted(() => {
         type="date" 
         class="date" 
         placeholder="DD-MM-YYYY"
-        @input="() => {console.log(date)}">
+        @input="() => {getHistory()}">
     <button type="submit" @click.prevent="addProduct(rows.length)" class="add-btn">+</button>
 
     <form>
@@ -131,6 +191,20 @@ onMounted(() => {
         </tr>
         </thead>
         <tbody>
+        <tr v-for="row in history" :key="row.id">
+            <td>
+                <input v-model="row.name"
+                    type="text" class="name" disabled>
+            </td>
+            <td>
+                <input v-model="row.amt" 
+                    type="number" step="0.1" min="0" class="amount" disabled>
+            </td>
+            <td><input v-model="row.protein" type="number" min="0" class="calculation" readonly></td>
+            <td><input v-model="row.fats" type="number" min="0" class="calculation" readonly></td>
+            <td><input v-model="row.carbohydrates" type="number" min="0" class="calculation" readonly></td>
+            <td><input v-model="row.calories" type="number" min="0" class="calculation" readonly></td>
+        </tr>
         <tr v-for="row in rows" :key="row.id">
             <td v-if="row.to_be_added" >
                 <input v-model="rows[row.id].name" @input="getData(row.id)" @focus="() => {
@@ -166,7 +240,7 @@ onMounted(() => {
         </tr>
         </tfoot>
     </table>
-    <button class="save-btn">Сохранить</button>
+    <button class="save-btn" @click="addRecord">Сохранить</button>
     </form>
 
     <div class="list" id="list">

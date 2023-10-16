@@ -21,7 +21,7 @@ class UserCreate(schemas.BaseUserCreate):
     password: str
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
-    is_verified: Optional[bool] = False
+    is_verified: Optional[bool] = True
 
 
 class UserUpdate(schemas.BaseUserUpdate):

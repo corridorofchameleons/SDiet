@@ -29,4 +29,7 @@ header {
     bottom: 0;
     right: 0;
 }
+a, a label {
+    cursor: pointer;
+}
 </style>
