@@ -6,12 +6,7 @@ const date = ref(null)
 const history = ref(null)
 
 const rows = ref([])
-const total_initial = ref({
-    p: 0,
-    f: 0,
-    c: 0,
-    cal: 0
-})
+const total_initial = ref(null)
 const total = ref({
     p: 0,
     f: 0,
@@ -36,6 +31,13 @@ async function getHistory() {
         }
     })
     history.value = res.data
+
+    total_initial.value = {
+        p: 0,
+        f: 0,
+        c: 0,
+        cal: 0
+    }
 
     let p = 0, f = 0, c = 0, cal = 0
 
@@ -73,14 +75,6 @@ function addProduct(id) {
 function removeProduct(id) {
     rows.value[id].to_be_added = false
     setTotal()
-
-    // let cnt = 0
-    // for (let i=0; i < rows.value.length; i++) {
-    //     if (rows.value[i].to_be_added) {
-    //         cnt++
-    //     }
-    // }
-    // if (cnt === 0) {addProduct(0)}
 }
 
 async function getData(id) {
