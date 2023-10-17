@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import axios from 'axios';
 
+axios.defaults.withCredentials = true
+
 const date = ref(null)
 const history = ref(null)
 
@@ -25,11 +27,13 @@ function setDate() {
 }
 
 async function getHistory() {
-    const res = await axios.get("http://localhost:8000/records", {
+    const res = await axios.get("http://localhost:8000/records", 
+    {
         params: {
             date: date.value
-        }
+        },
     })
+
     history.value = res.data
 
     total_initial.value = {

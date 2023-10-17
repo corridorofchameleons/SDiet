@@ -7,6 +7,7 @@ import router from '@/router'
     <header>
         <h1>SFDiet</h1>
         <div class="links">
+            <a @click="router.push({name: 'login'})">Логин</a>
             <a @click="router.push({name: 'account'})">Аккаунт</a>
             <a @click="router.push({name: 'products'})">Справочник</a>
         </div>
