@@ -165,9 +165,9 @@ function addRecord() {
     addProduct(0)
 }
 
-function reLoad() {
-    location.reload()
-}
+// function reLoad() {
+//     location.reload()
+// }
 
 onMounted(() => {
     addProduct(0)
@@ -250,7 +250,7 @@ onMounted(() => {
     </table>
     <button class="save-btn" @click.prevent="() => {
         addRecord()
-        reLoad()
+        // reLoad()
         }">Сохранить</button>
     </form>
 
