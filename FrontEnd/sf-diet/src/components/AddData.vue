@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import axios from 'axios';
+// import router from '@/router';
 
 axios.defaults.withCredentials = true
 
@@ -72,11 +73,13 @@ function addProduct(id) {
                 f: 0, 
                 c: 0,
                 cal: 0,
-                to_be_added: true
+                to_be_added: false,
+                to_be_shown: true
                 })
 }
 
 function removeProduct(id) {
+    rows.value[id].to_be_shown = false
     rows.value[id].to_be_added = false
     setTotal()
 }
@@ -98,6 +101,7 @@ function showList() {
 }
 
 function setValue(row) {
+    rows.value[curid].to_be_added = true 
     rows.value[curid].name = row.name 
     rows.value[curid].protein = row.protein 
     rows.value[curid].fats = row.fats
@@ -157,6 +161,12 @@ function addRecord() {
             )
          }
     }
+    rows.value = []
+    addProduct(0)
+}
+
+function reLoad() {
+    location.reload()
 }
 
 onMounted(() => {
@@ -204,14 +214,14 @@ onMounted(() => {
             <td><input v-model="row.calories" type="number" min="0" class="calculation" readonly></td>
         </tr>
         <tr v-for="row in rows" :key="row.id">
-            <td v-if="row.to_be_added" >
+            <td v-if="row.to_be_shown" >
                 <input v-model="rows[row.id].name" @input="getData(row.id)" @focus="() => {
                         curid = row.id
                         // showList()
                     }" 
                     type="text" class="name" required>
             </td>
-            <td v-if="row.to_be_added" >
+            <td v-if="row.to_be_shown" >
                 <input v-model="rows[row.id].amt" 
                     @focus="() => {
                         curid = row.id
@@ -219,11 +229,11 @@ onMounted(() => {
                     @input="setAmount"
                     type="number" step="0.1" min="0" class="amount" required>
             </td>
-            <td v-if="row.to_be_added" ><input v-model="rows[row.id].p" type="number" min="0" class="calculation" readonly></td>
-            <td v-if="row.to_be_added" ><input v-model="rows[row.id].f" type="number" min="0" class="calculation" readonly></td>
-            <td v-if="row.to_be_added" ><input v-model="rows[row.id].c" type="number" min="0" class="calculation" readonly></td>
-            <td v-if="row.to_be_added" ><input v-model="rows[row.id].cal" type="number" min="0" class="calculation" readonly></td>
-            <button v-if="row.to_be_added" @click.prevent="removeProduct(row.id)"
+            <td v-if="row.to_be_shown" ><input v-model="rows[row.id].p" type="number" min="0" class="calculation" readonly></td>
+            <td v-if="row.to_be_shown" ><input v-model="rows[row.id].f" type="number" min="0" class="calculation" readonly></td>
+            <td v-if="row.to_be_shown" ><input v-model="rows[row.id].c" type="number" min="0" class="calculation" readonly></td>
+            <td v-if="row.to_be_shown" ><input v-model="rows[row.id].cal" type="number" min="0" class="calculation" readonly></td>
+            <button v-if="row.to_be_shown" @click.prevent="removeProduct(row.id)"
                 class="del-btn"
                 >X</button>
         </tr>
@@ -238,7 +248,10 @@ onMounted(() => {
         </tr>
         </tfoot>
     </table>
-    <button class="save-btn" @click="addRecord">Сохранить</button>
+    <button class="save-btn" @click.prevent="() => {
+        addRecord()
+        reLoad()
+        }">Сохранить</button>
     </form>
 
     <div class="list" id="list">

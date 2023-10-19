@@ -33,7 +33,7 @@ async def create_record(record: RecordCreate, session: AsyncSession = Depends(ge
                         user: Users = Depends(current_user)):
     record.user_id = user.id
     stmt = insert(records).values(**record.model_dump())
-    print(stmt)
+
     await session.execute(stmt)
     await session.commit()
 
@@ -41,7 +41,7 @@ async def create_record(record: RecordCreate, session: AsyncSession = Depends(ge
 @router.get('/')
 async def get_record(date: str, session: AsyncSession = Depends(get_async_session),
                      user: Users = Depends(current_user)):
-    print(user.id)
+    print('getting records...')
     user_id = user.id
     stmt = select(records).where(records.c.user_id == user_id, records.c.date == date)
     result = await session.execute(stmt)
