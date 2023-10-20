@@ -1,5 +1,4 @@
-from datetime import datetime
-from sqlalchemy import MetaData, Integer, Float, String, DATE, ForeignKey, Table, Column, TIMESTAMP, Boolean
+from sqlalchemy import MetaData, Integer, Float, String, ForeignKey, Table, Column
 
 metadata = MetaData()
 
@@ -15,4 +14,14 @@ records = Table(
     Column('fats', Float),
     Column('carbohydrates', Float),
     Column('calories', Float),
+)
+
+limits = Table(
+    'limits',
+    metadata,
+    Column('user_id', Integer, ForeignKey('users.id', ondelete='CASCADE')),
+    Column('protein', Float, nullable=True),
+    Column('fats', Float, nullable=True),
+    Column('carbohydrates', Float, nullable=True),
+    Column('calories', Float, nullable=True)
 )

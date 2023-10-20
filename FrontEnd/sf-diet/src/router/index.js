@@ -31,6 +31,11 @@ const routes = [
         path: '/add_data',
         name: 'add_data',
         component: () => import('@/components/AddData.vue')
+      },
+      {
+        path: 'update_limits',
+        name: 'update_limits',
+        component: () => import('@/components/UpdateLimits.vue')  
       }
     ]
   },

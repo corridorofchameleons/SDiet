@@ -170,7 +170,6 @@ function addRecord() {
 }
 
 function deleteRecord(id) {
-    console.log(id)
     axios.delete("http://localhost:8000/records/" + id)
     getHistory()
     router.push({name: 'add_data'})

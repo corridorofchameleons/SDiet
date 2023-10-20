@@ -12,6 +12,7 @@ from database import get_async_session
 
 from products.router import router as products_router
 from calculations.router import router as calc_router
+from auth.limits import router as limits_router
 
 fastapi_users = FastAPIUsers[Users, int](
     get_user_manager,
@@ -63,6 +64,4 @@ current_user = fastapi_users.current_user()
 
 app.include_router(products_router)
 app.include_router(calc_router)
-
-
-
+app.include_router(limits_router)

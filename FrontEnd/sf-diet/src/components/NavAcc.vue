@@ -3,7 +3,8 @@ import { ref } from 'vue'
 
 const btns = ref([
     { num: 1, b_name: 'Внести данные', b_link: 'add_data' },
-    { num: 2, b_name: 'Выйти', b_link: 'logout'}
+    { num: 2, b_name: 'Изменить лимиты', b_link: 'update_limits' },
+    { num: 3, b_name: 'Выйти', b_link: 'logout'},
 ])
 </script>
 
