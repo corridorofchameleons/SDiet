@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import axios from 'axios';
+import router from '@/router';
 // import router from '@/router';
 
 axios.defaults.withCredentials = true
@@ -146,9 +147,10 @@ function setTotal() {
 }
 
 function addRecord() {
+    let records = []
     for (let i=0; i < rows.value.length; i++) {
         if (rows.value[i].to_be_added) {
-            axios.post("http://localhost:8000/records", {
+            records.push({
                 "user_id": 0,
                 "date": date.value,
                 "name": rows.value[i].name,
@@ -157,12 +159,21 @@ function addRecord() {
                 "fats": rows.value[i].f,
                 "carbohydrates": rows.value[i].c,
                 "calories": rows.value[i].cal
-                },
-            )
-         }
+                })
+        }
     }
+    axios.post("http://localhost:8000/records/", records)
     rows.value = []
+    getHistory()
     addProduct(0)
+    router.push({name: 'add_data'})
+}
+
+function deleteRecord(id) {
+    console.log(id)
+    axios.delete("http://localhost:8000/records/" + id)
+    getHistory()
+    router.push({name: 'add_data'})
 }
 
 // function reLoad() {
@@ -212,6 +223,7 @@ onMounted(() => {
             <td><input v-model="row.fats" type="number" min="0" class="calculation" readonly></td>
             <td><input v-model="row.carbohydrates" type="number" min="0" class="calculation" readonly></td>
             <td><input v-model="row.calories" type="number" min="0" class="calculation" readonly></td>
+            <button class="del-btn" @click.prevent="deleteRecord(row.id)">Х</button>
         </tr>
         <tr v-for="row in rows" :key="row.id">
             <td v-if="row.to_be_shown" >

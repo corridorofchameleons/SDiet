@@ -1,7 +1,9 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi_users import FastAPIUsers
-from sqlalchemy import select, insert, desc, func
+from sqlalchemy import select, insert, desc, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.testing.pickleable import User
 
@@ -29,13 +31,14 @@ router = APIRouter(
 
 
 @router.post('/')
-async def create_record(record: RecordCreate, session: AsyncSession = Depends(get_async_session),
+async def create_record(record_list: List[RecordCreate], session: AsyncSession = Depends(get_async_session),
                         user: Users = Depends(current_user)):
-    record.user_id = user.id
-    stmt = insert(records).values(**record.model_dump())
+    for record in record_list:
+        record.user_id = user.id
+        stmt = insert(records).values(**record.model_dump())
 
-    await session.execute(stmt)
-    await session.commit()
+        await session.execute(stmt)
+        await session.commit()
 
 
 @router.get('/')
@@ -47,4 +50,12 @@ async def get_record(date: str, session: AsyncSession = Depends(get_async_sessio
     result = await session.execute(stmt)
     res = [{'id': a, 'name': d, 'amt': e, 'protein': round(f, 1), 'fats': round(g, 1), 'carbohydrates': round(h, 1), 'calories': round(i)} for a, b, c, d, e, f, g, h, i in result.all()]
     return res
+
+
+@router.delete('/{rec_id}')
+async def delete_record(rec_id: int, session: AsyncSession = Depends(get_async_session),
+                     user: Users = Depends(current_user)):
+    stmt = delete(records).where(records.c.id == rec_id)
+    await session.execute(stmt)
+    await session.commit()
 
