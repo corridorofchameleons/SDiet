@@ -6,8 +6,15 @@ import router from '@/router';
 
 axios.defaults.withCredentials = true
 
+
 const date = ref(null)
 const history = ref(null)
+const limits = ref({
+    protein: null,
+    fats: null,
+    carbohydrates: null,
+    calories: null
+})
 
 const rows = ref([])
 const total_initial = ref(null)
@@ -36,31 +43,48 @@ async function getHistory() {
         },
     })
 
-    history.value = res.data
+    .catch((error) => {
+        // if (error.response.status === 401) {
+            // router.push({name: 'login'})
+        // }
+        window.alert(error.message)
+        router.push({name: 'login'})
+    })
 
-    total_initial.value = {
-        p: 0,
-        f: 0,
-        c: 0,
-        cal: 0
-    }
+    if (res) {
+        history.value = res.data
 
-    let p = 0, f = 0, c = 0, cal = 0
+        total_initial.value = {
+            p: 0,
+            f: 0,
+            c: 0,
+            cal: 0
+        }
 
-    for (let i=0; i < history.value.length; i++) {
-        p += parseFloat(history.value[i].protein)
-        f += parseFloat(history.value[i].fats)
-        c += parseFloat(history.value[i].carbohydrates)
-        cal += parseFloat(history.value[i].calories)
-    }
+        let p = 0, f = 0, c = 0, cal = 0
 
-    total_initial.value.p += p
-    total_initial.value.f += f
-    total_initial.value.c += c
-    total_initial.value.cal += cal
-    setTotal()
+        for (let i=0; i < history.value.length; i++) {
+            p += parseFloat(history.value[i].protein)
+            f += parseFloat(history.value[i].fats)
+            c += parseFloat(history.value[i].carbohydrates)
+            cal += parseFloat(history.value[i].calories)
+        }
+
+        total_initial.value.p += p
+        total_initial.value.f += f
+        total_initial.value.c += c
+        total_initial.value.cal += cal
+        setTotal()}
 }
 
+async function getLimits() {
+    const res = await axios.get("http://localhost:8000/limits")
+    limits.value.protein = res.data.protein
+    limits.value.fats = res.data.fats
+    limits.value.carbohydrates = res.data.carbohydrates
+    limits.value.calories = res.data.calories
+    console.log(limits.value)
+}
 
 function addProduct(id) {
     rows.value.push({id: id, 
@@ -131,6 +155,11 @@ function setAmount() {
 function setTotal() {
     let p = 0, f = 0, c = 0, cal = 0
 
+    const p_total = document.getElementById("p-total")
+    const f_total = document.getElementById("f-total")
+    const c_total = document.getElementById("c-total")
+    const cal_total = document.getElementById("cal-total")
+
     for (let i=0; i < rows.value.length; i++) {
         if (rows.value[i].to_be_added) {
             p += parseFloat(rows.value[i].p)
@@ -140,10 +169,27 @@ function setTotal() {
         }
     }
 
-    total.value.p = (parseFloat(total_initial.value.p) + parseFloat(p)).toFixed(1)
-    total.value.f = (parseFloat(total_initial.value.f) + parseFloat(f)).toFixed(1)
-    total.value.c = (parseFloat(total_initial.value.c) + parseFloat(c)).toFixed(1)
+    total.value.p = (parseFloat(total_initial.value.p) + parseFloat(p)).toFixed(0)
+    total.value.f = (parseFloat(total_initial.value.f) + parseFloat(f)).toFixed(0)
+    total.value.c = (parseFloat(total_initial.value.c) + parseFloat(c)).toFixed(0)
     total.value.cal = (parseFloat(total_initial.value.cal) + parseFloat(cal)).toFixed(0)
+
+    if (limits.value.protein && limits.value.protein > total.value.p) {
+        p_total.style.backgroundColor = 'rgba(235, 50, 50, .3)'
+    }
+    else {p_total.style.backgroundColor = 'rgba(50, 235, 50, .3)'}
+    if (limits.value.fats && limits.value.fats > total.value.f) {
+        f_total.style.backgroundColor = 'rgba(235, 50, 50, .3)'
+    }
+    else {f_total.style.backgroundColor = 'rgba(50, 235, 50, .3)'}
+    if (limits.value.carbohydrates && limits.value.carbohydrates > total.value.c) {
+        c_total.style.backgroundColor = 'rgba(235, 50, 50, .3)'
+    }
+    else {c_total.style.backgroundColor = 'rgba(50, 235, 50, .3)'}
+    if (limits.value.calories && limits.value.calories > total.value.cal) {
+        cal_total.style.backgroundColor = 'rgba(235, 50, 50, .3)'
+    }
+    else {cal_total.style.backgroundColor = 'rgba(50, 235, 50, .3)'}
 }
 
 function addRecord() {
@@ -183,6 +229,7 @@ onMounted(() => {
     addProduct(0)
     setDate()
     getHistory()
+    getLimits()
 })
 
 </script>
@@ -251,11 +298,18 @@ onMounted(() => {
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="2" class="empty"></td>
-            <td><input v-model="total.p" type="number" min="0" class="calculation total" readonly></td>
-            <td><input v-model="total.f" type="number" min="0" class="calculation total" readonly></td>
-            <td><input v-model="total.c" type="number" min="0" class="calculation total" readonly></td>
-            <td><input v-model="total.cal" type="number" min="0" class="calculation total" readonly></td>
+            <td colspan="2" class="empty">Всего</td>
+            <td><input id="p-total" v-model="total.p" type="number" min="0" class="calculation total" readonly></td>
+            <td><input id="f-total" v-model="total.f" type="number" min="0" class="calculation total" readonly></td>
+            <td><input id="c-total" v-model="total.c" type="number" min="0" class="calculation total" readonly></td>
+            <td><input id="cal-total" v-model="total.cal" type="number" min="0" class="calculation total" readonly></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="empty">Цель</td>
+            <td><input v-model="limits.protein" type="number" class="calculation total limits" readonly></td>
+            <td><input v-model="limits.fats" type="number" class="calculation total limits" readonly></td>
+            <td><input v-model="limits.carbohydrates" type="number" class="calculation total limits" readonly></td>
+            <td><input v-model="limits.calories" type="number" class="calculation total limits" readonly></td>
         </tr>
         </tfoot>
     </table>
@@ -316,6 +370,9 @@ th:first-of-type {
     font-weight: bold;
 }
 .empty {
+    font-weight: bold;
+    font-size: 1em;
+    padding-right: 6px;
     background-color: unset;
 }
 .add-btn {

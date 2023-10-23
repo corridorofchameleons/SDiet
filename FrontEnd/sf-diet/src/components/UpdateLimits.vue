@@ -1,6 +1,7 @@
 <script setup>
 import {onMounted, ref} from 'vue'
 import axios from 'axios';
+// import router from '@/router';
 
 axios.defaults.withCredentials = true
 
@@ -14,23 +15,33 @@ const data = ref({
 
 async function getLimits() {
     const tmp_data = await axios.get("http://localhost:8000/limits")
+    .catch((error) => {
+        // if (error.response.status === 401) {
+            // router.push({name: 'login'})
+        // }
+        window.alert(error.message)
+        // router.push({name: 'login'})
+    })
+
     const result = tmp_data.data
-    if (result.length === 1) {
-        data.value.protein = result[0].protein
-        data.value.fats = result[0].fats
-        data.value.carbohydrates = result[0].carbohydrates
-        data.value.calories = result[0].calories
-    }
+
+    data.value.protein = result.protein
+    data.value.fats = result.fats
+    data.value.carbohydrates = result.carbohydrates
+    data.value.calories = result.calories
+
+    console.log(data.value)
 }
 
 function saveLimits() {
+    console.log(data.value)
     axios.post("http://localhost:8000/limits",
     {
         "user_id": data.value.user,
-        "protein": data.value.protein,
-        "fats": data.value.fats,
-        "carbohydrates": data.value.carbohydrates,
-        "calories": data.value.calories
+        "protein": data.value.protein ? data.value.protein : null,
+        "fats": data.value.fats ? data.value.fats : null,
+        "carbohydrates": data.value.carbohydrates ? data.value.carbohydrates : null,
+        "calories": data.value.calories ? data.value.calories : null
     })
     .then((response) => {
         if (response.status === 200) {

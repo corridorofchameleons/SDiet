@@ -5,6 +5,7 @@ import router from '@/router';
 
 const login_form = ref({username: null, password: null})
 const bad_credentials = ref(false)
+let is_authorized = ref(null)
 
 function logIn() {
 
@@ -20,6 +21,7 @@ function logIn() {
 .then((response) => {
     console.log(response.status + " OK")
     if (response.status === 204) {
+        is_authorized.value = true
         router.push({name: 'account'})
     }
 })

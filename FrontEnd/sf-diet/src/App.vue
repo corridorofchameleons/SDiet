@@ -1,5 +1,5 @@
 <script setup>
-import PageHeader from '@/components/PageHeader.vue';
+import PageHeader from '@/components/PageHeader.vue'
 import PageFooter from '@/components/PageFooter.vue'
 
 </script>
@@ -20,13 +20,11 @@ import PageFooter from '@/components/PageFooter.vue'
 
 <style>
 header, body, footer {
-  margin-left: 8px;
+  margin: 0 auto;
   width: 1138px;
 }
 body {
   min-height: 800px;
 }
-.content {
-  margin-left: 8px;
-}
+
 </style>

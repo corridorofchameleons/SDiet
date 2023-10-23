@@ -5,7 +5,7 @@ import router from '@/router'
 
 <template>
     <header>
-        <h1>SFDiet</h1>
+        <h1 @click="router.push({name: 'home'})">SFDiet</h1>
         <div class="links">
             <a @click="router.push({name: 'login'})">Логин</a>
             <a @click="router.push({name: 'account'})">Аккаунт</a>
@@ -30,7 +30,7 @@ header {
     bottom: 0;
     right: 0;
 }
-a, a label {
+a, a label, h1, h1 label {
     cursor: pointer;
 }
 </style>

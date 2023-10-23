@@ -3,6 +3,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
+    path: '/',
+    name: 'home',
+    component: () => import('@/views/AboutView.vue')
+  },
+  {
     path: '/products',
     name: 'products',
 
@@ -24,7 +29,6 @@ const routes = [
   {
     path: '/account',
     name: 'account',
-
     component: () => import('@/views/AccountView.vue'),
     children: [
       {
@@ -48,7 +52,7 @@ const routes = [
     path: '/logout',
     name: 'logout',
     component: () => import ('@/components/LogOut.vue')
-  }
+  },
 ]
 
 const router = createRouter({

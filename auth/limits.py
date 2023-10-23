@@ -48,7 +48,9 @@ async def get_limits(session: AsyncSession = Depends(get_async_session),
                         user: Users = Depends(current_user)):
     stmt = select(limits).where(limits.c.user_id == user.id)
     result = await session.execute(stmt)
-    res = [{"user_id": a, "protein": b, "fats": c, "carbohydrates": d, "calories": e} for a, b, c, d, e in result.all()]
+    res = [{"user_id": a, "protein": b, "fats": c, "carbohydrates": d, "calories": e} for a, b, c, d, e in result.all()][0]
+    print(res)
+
     return res
 
 
